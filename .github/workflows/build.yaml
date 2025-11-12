@@ -35,8 +35,8 @@ jobs:
 
               echo "Building image $IMAGE_NAME:$COMMIT_HASH and $IMAGE_NAME:latest"
               
-              curl -L -o /root/redirect_pkg_handler https://github.com/ThisSeanZhang/landscape/releases/latest/download/redirect_pkg_handler-x86_64
-              
+              curl -L -o ./redirect_pkg_handler https://github.com/ThisSeanZhang/landscape/releases/latest/download/redirect_pkg_handler-x86_64
+
               docker build -t "$IMAGE_NAME:$COMMIT_HASH" "$dir"
               docker tag "$IMAGE_NAME:$COMMIT_HASH" "$IMAGE_NAME:latest"
 
