@@ -1,0 +1,6 @@
+**/redirect_pkg_handler
+
+tailscale/data
+tailscale/.env
+
+
