@@ -1,0 +1,38 @@
+services:
+  tailscale:
+    image: ghcr.io/landscape-router/landscape-apps/tailscale:latest
+    container_name: mytail
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - PERFMON
+    devices:
+      - /dev/net/tun
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS}
+      - TS_USERSPACE=false
+      - TS_TAILSCALED_EXTRA_ARGS=--port=41641
+    sysctls:
+      net.ipv4.ip_forward: "1"
+      net.ipv6.conf.all.forwarding: "1"
+    volumes:
+      - ${DATA_PATH}:/var/lib/tailscale
+      - /root/.landscape-router/unix_link/:/ld_unix_link/:ro
+    networks:
+      my-tailscale-bridge:
+        ipv4_address: 10.100.1.10
+    dns:
+      - 10.100.1.1
+
+networks:
+  my-tailscale-bridge:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: tail-br0
+    ipam:
+      config:
+        - subnet: 10.100.1.0/24
+          gateway: 10.100.1.1
