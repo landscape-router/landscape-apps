@@ -1,0 +1,32 @@
+services:
+  netbird:
+    image: ghcr.io/landscape-router/landscape-apps/netbird:latest
+    container_name: mybird
+    hostname: mybird
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - BPF
+      - PERFMON
+    environment:
+      - NB_SETUP_KEY=${SETUP_KEY}
+    volumes:
+      - ${DATA_PATH}:/var/lib/netbird
+      - /root/.landscape-router/unix_link/:/ld_unix_link/:ro
+    networks:
+      my-netbird-bridge:
+        ipv4_address: 10.102.1.10
+    dns:
+      - 10.102.1.1
+
+networks:
+  my-netbird-bridge:
+    driver: bridge
+    driver_opts:
+      # 一定要设置, 否则默认会使用动态网卡名称, 重启后网卡名称变动导致 LAN 服务不能正常开启
+      com.docker.network.bridge.name: netbird-br0
+    ipam:
+      config:
+        - subnet: 10.102.1.0/24
+          gateway: 10.102.1.1
