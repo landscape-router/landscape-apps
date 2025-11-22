@@ -1,0 +1,35 @@
+services:
+  zerotier:
+    image: ghcr.io/landscape-router/landscape-apps/zerotier:latest
+    container_name: myzero
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN 
+      - BPF
+      - PERFMON
+    devices:
+      - /dev/net/tun
+    command: ${NETWORK_ID}
+    sysctls:
+      net.ipv4.ip_forward: "1"
+      net.ipv6.conf.all.forwarding: "1"
+    volumes:
+      - ${DATA_PATH}:/var/lib/zerotier-one
+      - /root/.landscape-router/unix_link/:/ld_unix_link/:ro
+    networks:
+      my-zerotier-bridge:
+        ipv4_address: 10.101.1.10
+    dns:
+      - 10.101.1.1
+
+networks:
+  my-zerotier-bridge:
+    driver: bridge
+    driver_opts:
+      # 一定要设置, 否则默认会使用动态网卡名称, 重启后网卡名称变动导致 LAN 服务不能正常开启
+      com.docker.network.bridge.name: zero-br0
+    ipam:
+      config:
+        - subnet: 10.101.1.0/24
+          gateway: 10.101.1.1
