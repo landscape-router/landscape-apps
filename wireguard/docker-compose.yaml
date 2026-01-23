@@ -3,6 +3,7 @@ services:
     image: ghcr.io/landscape-router/landscape-apps/wireguard:latest
     container_name: mywg
     restart: unless-stopped
+    privileged: true
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -20,6 +21,7 @@ services:
     sysctls:
       net.ipv4.ip_forward: "1"
       net.ipv6.conf.all.forwarding: "1"
+      net.ipv4.conf.all.src_valid_mark: "1"
     environment:
       - WG_INTERFACE_PRIVATE_KEY=${WG_INTERFACE_PRIVATE_KEY}
       - WG_INTERFACE_ADDRESS=${WG_INTERFACE_ADDRESS}

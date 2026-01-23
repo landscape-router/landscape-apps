@@ -1,6 +1,6 @@
 FROM debian:bookworm
 
-RUN apt-get update && apt-get install -y wireguard iproute2 iptables openresolv tcpdump iputils-ping \
+RUN apt-get update && apt-get install -y wireguard iproute2 iptables openresolv tcpdump iputils-ping procps \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ./redirect_pkg_handler /redirect_pkg_handler
