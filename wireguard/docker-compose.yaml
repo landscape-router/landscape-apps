@@ -1,0 +1,43 @@
+services:
+  wireguard:
+    image: ghcr.io/landscape-router/landscape-apps/wireguard:latest
+    container_name: mywg
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - BPF
+      - PERFMON
+    volumes:
+      - ./data:/etc/wireguard
+      - /lib/modules:/lib/modules
+      - /root/.landscape-router/unix_link/:/ld_unix_link/:ro
+    networks:
+      my-wireguard-bridge:
+        ipv4_address: 10.100.2.10
+    sysctls:
+      net.ipv4.ip_forward: "1"
+      net.ipv6.conf.all.forwarding: "1"
+    environment:
+      - WG_INTERFACE_PRIVATE_KEY=${WG_INTERFACE_PRIVATE_KEY}
+      - WG_INTERFACE_ADDRESS=${WG_INTERFACE_ADDRESS}
+      - WG_INTERFACE_DNS=${WG_INTERFACE_DNS}
+      - WG_INTERFACE_POST_UP=${WG_INTERFACE_POST_UP}
+      - WG_INTERFACE_POST_DOWN=${WG_INTERFACE_POST_DOWN}
+      - WG_PEER_PUBLIC_KEY=${WG_PEER_PUBLIC_KEY}
+      - WG_PEER_PRESHARED_KEY=${WG_PEER_PRESHARED_KEY}
+      - WG_PEER_ALLOWED_IPS=${WG_PEER_ALLOWED_IPS}
+      - WG_PEER_ENDPOINT=${WG_PEER_ENDPOINT}
+      - WG_PEER_PERSISTENT_KEEPALIVE=${WG_PEER_PERSISTENT_KEEPALIVE}
+
+networks:
+  my-wireguard-bridge:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: wg-br0
+    ipam:
+      config:
+        - subnet: 10.100.2.0/24
+          gateway: 10.100.2.1
