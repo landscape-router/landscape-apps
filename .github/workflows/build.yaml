@@ -1,9 +1,11 @@
 name: Build and Push Docker Images
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - ci
+      - main
 
 jobs:
   build:
